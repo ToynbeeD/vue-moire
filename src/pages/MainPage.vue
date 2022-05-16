@@ -101,6 +101,13 @@ export default {
     }
   },
   watch: {
+    '$route.params': {
+      handler () {
+        this.filterCategoryId = this.$route.name === 'category' ? this.$route.params.id : 0
+        this.doLoadProducts()
+      },
+      immediate: true
+    },
     page () {
       this.doLoadProducts()
     },
@@ -122,9 +129,6 @@ export default {
     filterColors () {
       this.doLoadProducts()
     }
-  },
-  created () {
-    this.doLoadProducts()
   }
 }
 </script>

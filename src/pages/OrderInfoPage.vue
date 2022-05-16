@@ -110,7 +110,7 @@ export default {
       } catch (error) {
         this.orderInfoLoading = false
         if (error.response.status === 400) {
-          this.$router.push({ name: 'notFound' })
+          this.$router.replace({ name: 'notFound' })
         } else {
           this.orderInfoFailLoad = true
         }

@@ -12,7 +12,7 @@
     </button>
 
     <label>
-      <input type="text" :value="amount" name="count" @input="change($event.target.value)"/>
+      <input type="text" :value="amount" name="count" @change="change($event.target.value)" :key="renderKey"/>
     </label>
 
     <button type="button" aria-label="Добавить один товар" @click="change(amount + 1)">
@@ -25,6 +25,11 @@
 
 <script>
 export default {
+  data () {
+    return {
+      renderKey: 0
+    }
+  },
   model: {
     prop: 'amount',
     event: 'change'
@@ -33,6 +38,7 @@ export default {
   methods: {
     change (value) {
       this.$emit('change', value)
+      this.renderKey++
     }
   }
 }

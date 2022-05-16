@@ -12,7 +12,7 @@
           <router-link class="breadcrumbs__link" :to="{name: 'main'}"> Каталог </router-link>
         </li>
         <li class="breadcrumbs__item">
-          <router-link class="breadcrumbs__link" :to="{name: 'main'}"> {{ product.category.title }} </router-link>
+          <router-link class="breadcrumbs__link" :to="{ name: 'category', params: { id: product.category.id } }"> {{ product.category.title }} </router-link>
         </li>
         <li class="breadcrumbs__item">
           <a class="breadcrumbs__link"> {{ product.title }} </a>
@@ -39,7 +39,7 @@
           <form class="form" action="#" method="POST" @submit.prevent="addToCart">
             <div class="item__row item__row--center">
 
-              <ProductAmount v-model.number="formatAmount"/>
+              <ProductAmount v-model="formatAmount"/>
 
               <b class="item__price"> {{ product.price | numberFormat }} ₽ </b>
             </div>
@@ -75,6 +75,7 @@
             </button>
             <p v-if="addingToCart">Добавляем товар в корзину...</p>
             <p v-else-if="addToCartFailed">Не удалось добавить товар...</p>
+            <p v-else-if="addToCartSuccess">Товар успешно добавлен в корзину!</p>
           </form>
         </div>
       </div>
@@ -162,6 +163,7 @@ export default {
 
       addingToCart: false,
       addToCartFailed: false,
+      addToCartSuccess: false,
 
       productData: null,
       checkedColor: null,
@@ -200,6 +202,7 @@ export default {
       this.buttonDisadled = true
       this.addingToCart = true
       this.addToCartFailed = false
+      this.addToCartSuccess = false
       try {
         await this.addProductToCart({
           productId: this.product.id,
@@ -209,6 +212,7 @@ export default {
         })
         this.buttonDisadled = false
         this.addingToCart = false
+        this.addToCartSuccess = true
       } catch {
         this.addToCartFailed = true
         this.buttonDisadled = false
@@ -226,16 +230,22 @@ export default {
         this.productLoading = false
       } catch (err) {
         if (err.response.status === 404) {
-          this.$router.push({ name: 'notFound' })
+          this.$router.replace({ name: 'notFound' })
         }
         this.productLoading = false
         this.productLoadingFailed = true
       }
     },
     checkValue (value) {
-      if (value !== Number(value)) return 0
-      else if (value <= 0) return 0
-      else return value
+      const valueString = value.toString()
+      const trimValue = valueString.trim()
+      if (trimValue.length <= 0) return 1
+
+      const regexp = /[^\d]/g
+      const formatValue = valueString.replace(regexp, '')
+
+      if (!formatValue) return 1
+      else return parseInt(formatValue)
     },
     changeContentPage (number) {
       if (this.itemContentPage === number) {

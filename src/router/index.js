@@ -11,6 +11,7 @@ Vue.use(VueRouter)
 
 const routes = [
   { name: 'main', component: MainPage, path: '/' },
+  { name: 'category', component: MainPage, path: '/category/:id' },
   { name: 'product', component: ProductPage, path: '/product/:id' },
   { name: 'cart', component: CartPage, path: '/cart' },
   { name: 'order', component: OrderPage, path: '/order' },

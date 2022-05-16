@@ -51,7 +51,7 @@
 
       <fieldset class="form__block">
         <legend class="form__legend">Цвет</legend>
-        <ul class="colors">
+        <ul class="colors colors__bgc">
           <li class="colors__item" v-for="color in colors" :key="color.id">
             <label class="colors__label">
               <input
@@ -216,6 +216,7 @@ export default {
       this.$emit('update:colorIds', [])
       this.$emit('update:materialIds', [])
       this.$emit('update:seasonIds', [])
+      if (this.$route.name === 'category') this.$router.push({ name: 'main' })
       this.isHasFilter = false
     },
     async doLoadFeatures () {
@@ -238,9 +239,15 @@ export default {
       this.colorsData = colors
     },
     checkValue (value) {
-      if (!Number(value)) return 0
-      else if (value < 0) return 0
-      else return value
+      const valueString = value.toString()
+      const trimValue = valueString.trim()
+      if (trimValue.length <= 0) return 0
+
+      const regexp = /[^\d]/g
+      const formatValue = valueString.replace(regexp, '')
+
+      if (!formatValue) return 0
+      else return parseInt(formatValue)
     },
     checkFilter () {
       if (
@@ -256,6 +263,19 @@ export default {
     }
   },
   watch: {
+    '$route.params': {
+      handler () {
+        if (this.$route.name === 'category') {
+          this.currentCategoryId = this.$route.params.id
+          this.isHasFilter = true
+        } else {
+          this.currentCategoryId = 0
+          this.checkFilter()
+        }
+        this.doLoadFeatures()
+      },
+      immediate: true
+    },
     priceFrom (value) {
       this.currentPriceFrom = value
     },
@@ -274,9 +294,6 @@ export default {
     seasonIds (value) {
       this.currentSeasonIds = value
     }
-  },
-  created () {
-    this.doLoadFeatures()
   }
 }
 </script>
